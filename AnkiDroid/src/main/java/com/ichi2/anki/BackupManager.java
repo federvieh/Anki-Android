@@ -103,7 +103,8 @@ public class BackupManager {
 
     public static boolean performBackupInBackground(final String colPath, int interval, boolean force) {
         SharedPreferences prefs = AnkiDroidApp.getSharedPrefs(AnkiDroidApp.getInstance().getBaseContext());
-        if (!prefs.getBoolean("useBackup", true) && !force) {
+        if (prefs.getInt("backupMax", 8) == 0 && !force) {
+            Timber.w("backups are disabled");
             return false;
         }
         final File colFile = new File(colPath);
@@ -210,8 +211,12 @@ public class BackupManager {
         return getFreeDiscSpace(path) >= (MIN_FREE_SPACE * 1024 * 1024);
     }
 
-
-    private static long getFreeDiscSpace(String path) {
+    /**
+     * Get free disc space in bytes from path to Collection
+     * @param path
+     * @return
+     */
+    public static long getFreeDiscSpace(String path) {
         return getFreeDiscSpace(new File(path));
     }
 

@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,7 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.android.common.view.SlidingTabLayout;
+import com.ichi2.ui.SlidingTabLayout;
 import com.ichi2.anim.ActivityTransitionAnimation;
 import com.ichi2.anki.stats.AnkiStatsTaskHandler;
 import com.ichi2.anki.stats.ChartView;
@@ -79,11 +80,6 @@ public class Statistics extends NavigationDrawerActivity implements
     private Spinner mActionBarSpinner;
     private static boolean sIsSubtitle;
 
-    /** Returns the navdrawer item that corresponds to this Activity. */
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return DRAWER_STATISTICS;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,12 +168,8 @@ public class Statistics extends NavigationDrawerActivity implements
     @Override
     protected void onResume() {
         Timber.d("onResume()");
+        selectNavigationItem(R.id.nav_stats);
         super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
 
@@ -276,7 +268,7 @@ public class Statistics extends NavigationDrawerActivity implements
      * @return text to be used in the subtitle of the drop-down deck selector
      */
     public String getSubtitleText() {
-        return getSelectedNavDrawerTitle();
+        return getResources().getString(R.string.statistics);
     }
 
 
@@ -487,7 +479,7 @@ public class Statistics extends NavigationDrawerActivity implements
                     Collection col = CollectionHelper.getInstance().getCol(getActivity());
                     List<String> parts = Arrays.asList(col.getDecks().current().getString("name").split("::"));
                     if(sIsSubtitle)
-                        UIUtils.setSubtitle(getActivity(), parts.get(parts.size() - 1));
+                        ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(parts.get(parts.size() - 1));
                     else
                         getActivity().setTitle(parts.get(parts.size() - 1));
                 } catch (JSONException e) {
@@ -495,7 +487,7 @@ public class Statistics extends NavigationDrawerActivity implements
                 }
             } else {
                 if(sIsSubtitle)
-                    UIUtils.setSubtitle(getActivity(), getResources().getString(R.string.stats_deck_collection));
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.stats_deck_collection);
                 else
                     getActivity().setTitle(getResources().getString(R.string.stats_deck_collection));
             }
@@ -645,7 +637,7 @@ public class Statistics extends NavigationDrawerActivity implements
                 try {
                     List<String> parts = Arrays.asList(col.getDecks().current().getString("name").split("::"));
                     if(sIsSubtitle)
-                        UIUtils.setSubtitle(getActivity(), parts.get(parts.size() - 1));
+                        ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(parts.get(parts.size() - 1));
                     else
                         getActivity().setTitle(parts.get(parts.size() - 1));
                 } catch (JSONException e) {
@@ -653,7 +645,7 @@ public class Statistics extends NavigationDrawerActivity implements
                 }
             } else {
                 if(sIsSubtitle)
-                    UIUtils.setSubtitle(getActivity(), getResources().getString(R.string.stats_deck_collection));
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.stats_deck_collection);
                 else
                     getActivity().setTitle(getResources().getString(R.string.stats_deck_collection));
             }

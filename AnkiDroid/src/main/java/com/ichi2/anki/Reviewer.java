@@ -59,12 +59,12 @@ public class Reviewer extends AbstractFlashcardViewer {
             } else {
                 Timber.e("Could not set title in reviewer because collection closed");
             }
-            UIUtils.setTitle(this, title[title.length - 1]);
+            getSupportActionBar().setTitle(title[title.length - 1]);
             super.setTitle(title[title.length - 1]);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        UIUtils.setSubtitle(this, "", mNightMode);
+        getSupportActionBar().setSubtitle("");
     }
 
 
@@ -85,8 +85,6 @@ public class Reviewer extends AbstractFlashcardViewer {
         DeckTask.launchDeckTask(DeckTask.TASK_TYPE_ANSWER_CARD, mAnswerCardHandler, new DeckTask.TaskData(getCol(), mSched, null,
                 0));
 
-        // Since we aren't actually answering a card, decrement the rep count
-        mSched.setReps(mSched.getReps() - 1);
         disableDrawerSwipeOnConflicts();
         // Add a weak reference to current activity so that scheduler can talk to to Activity
         mSched.setContext(new WeakReference<Activity>(this));

@@ -157,7 +157,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
         "edited",
         "interval"};
 
-    private int[] mBackground;
+    private int[] mBackground = new int[] { R.color.card_browser_background, R.color.card_browser_marked,
+            R.color.card_browser_suspended, R.color.card_browser_marked };
 
     private ActionBar mActionBar;
     private DeckDropDownAdapter mDropDownAdapter;
@@ -333,12 +334,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
     };
 
-    /** Returns the navdrawer item that corresponds to this Activity. */
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return DRAWER_BROWSER;
-    }
-
 
     private void onSearch() {
         mSearchTerms = mSearchView.getQuery().toString();
@@ -351,7 +346,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Themes.applyTheme(this);
         super.onCreate(savedInstanceState);
         Timber.d("onCreate()");
         View mainView = getLayoutInflater().inflate(R.layout.card_browser, null);
@@ -374,8 +368,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
             mDeckNames.put(String.valueOf(did), getCol().getDecks().name(did));
         }
         registerExternalStorageListener();
-
-        mBackground = Themes.getCardBrowserBackground();
 
         SharedPreferences preferences = AnkiDroidApp.getSharedPrefs(getBaseContext());
 
@@ -582,7 +574,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     protected void onResume() {
         Timber.d("onResume()");
         super.onResume();
-        selectNavigationItem(DRAWER_BROWSER);
+        selectNavigationItem(R.id.nav_browser);
     }
 
 
@@ -981,8 +973,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             if (!result.getBoolean()) {
                 closeCardBrowser(DeckPicker.RESULT_DB_ERROR);
             }
-            mProgressDialog.dismiss();
-
+            dismissProgressDialog();
         }
 
 
@@ -1016,8 +1007,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             } else {
                 closeCardBrowser(DeckPicker.RESULT_DB_ERROR);
             }
-            mProgressDialog.dismiss();
-
+            dismissProgressDialog();
         }
 
 
@@ -1042,8 +1032,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         @Override
         public void onPostExecute(DeckTask.TaskData result) {
-            mProgressDialog.dismiss();
-
+            dismissProgressDialog();
         }
 
 
@@ -1091,9 +1080,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             if (result != null && mCards != null) {
                 Timber.i("CardBrowser:: Completed doInBackgroundSearchCards Successfuly");
                 updateList();
-                if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                    mProgressDialog.dismiss();
-                }
+                dismissProgressDialog();
                 // After the initial searchCards query, start rendering the question and answer in the background
                 DeckTask.launchDeckTask(DeckTask.TASK_TYPE_RENDER_BROWSER_QA, mRenderQAHandler, new DeckTask.TaskData(
                         new Object[] { getCol(), mCards, 0, 100 }));
@@ -1299,6 +1286,18 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
     }
 
+
+    private void dismissProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            try {
+                mProgressDialog.dismiss();
+            } catch (IllegalArgumentException e) {
+                // This shouldn't be neccessary, but crashes still occurring (see 4f949b11-9cdc-41fd-80b8-7c4d02b25151)
+                // TODO: Check if multithreading issue
+                Timber.w(e, "Could not dismiss mProgressDialog");
+            }
+        }
+    }
 
 
     private ArrayList<HashMap<String, String>> getCards() {
