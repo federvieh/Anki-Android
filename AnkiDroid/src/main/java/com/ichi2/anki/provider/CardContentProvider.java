@@ -428,9 +428,10 @@ public class CardContentProvider extends ContentProvider {
                 Long modelId = values.getAsLong(FlashCardsContract.Note.MID);
                 com.ichi2.libanki.Note newNote = new com.ichi2.libanki.Note(col, col.getModels().get(modelId));
                 String[] fields = newNote.getFields();
-                for (int i = 0; i < fields.length; i++) {
-                    newNote.setField(i, "temp");
-                }
+//                for (int i = 0; i < fields.length; i++) {
+//                    newNote.setField(i, "temp");
+//                }
+                newNote.setField(0, "temp");
                 col.addNote(newNote);
                 return Uri.withAppendedPath(FlashCardsContract.Note.CONTENT_URI, Long.toString(newNote.getId()));
             }
